@@ -26,12 +26,6 @@ import torch.multiprocessing as mp
 import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.models as models
-#from MODELS.cifar import create_net
-#from resnet import resnet50
-#from models import *
-#from models.coAtNet import coatnet_0
-#from utils import WarmUpLR
-#from transforms import CutOut, RandomErasing
 from torchvision.models import mobilenet_v3_large, resnet50, vgg16
 from MODELS.model_resnet import *
 from PIL import ImageFile
@@ -173,36 +167,11 @@ def main_worker(gpu, ngpus_per_node, args):
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                 world_size=args.world_size, rank=args.rank)
     # create model
-    # model = WaveNet().to(device)
-    #model = WaveNet_small()
-    #model = MobileNetV3(mode='large', classes_num=100, input_size=32, width_multiplier=1)
-    #model = mobilenetv3_large()
-    #model = MobileNetV3(model_mode="LARGE", multiplier=1.0)
-   # model =  create_net(args)
    # model = resnet50()
     # create model
     if args.arch == "resnet":
         model = ResidualNet( 'CIFAR100',args.depth, 100, args.att_type)
              
-
-    #model = torch.hub.load('pytorch/vision:v0.9.0', 'mobilenet_v3_large',
-                       #    pretrained=True)
-
-    #model.classifier[-1] = torch.nn.Linear(in_features=1280,  # as in original
-                                         #  out_features=100)  # number of class labels in Cifar-10)
-
-    # model = resnet50(pretrained=True)
-    #model = WaveNet_32()
-    #model = VGG('VGG16')
-    #model = coatnet_0()
-    #model = WaveNet_3()
-  #  model = ResNet50()
-    #model = DLA()
-    #model.apply(init_weights)
-    No_trainable_params = sum(p.numel() for p in model.parameters())
-    #No_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print("Total number of trainable parameters:=", No_trainable_params)
-
     if not torch.cuda.is_available():
         print('using CPU, this will be slow')
     elif args.distributed:
@@ -249,7 +218,6 @@ def main_worker(gpu, ngpus_per_node, args):
         transforms.ToTensor(),
      #   CutOut(8),
         #RandomErasing(),
-        #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
 
@@ -309,45 +277,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     cudnn.benchmark = True
 
-    # Data loading code
-    '''print('==> Preparing data..')
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        #transforms.ColorJitter(hue=0.5, saturation=0.5),
-        transforms.RandomRotation(10),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-     #   CutOut(8),
-        #RandomErasing(),
-        #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-    ])
-     
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
-    ])
-    if args.dataset == 'cifar10':
-
-        trainset = torchvision.datasets.CIFAR10(
-            root='./data', train=True, download=True, transform=transform_train)
-        train_loader = DataLoader(
-            trainset, batch_size=args.batch_size, shuffle=True)
-
-        testset = torchvision.datasets.CIFAR10(
-            root='./data', train=False, download=True, transform=transform_test)
-        val_loader = DataLoader(
-            testset, batch_size=args.batch_size, shuffle=False)
-    else:
-        trainset = torchvision.datasets.CIFAR100(
-            root='./data', train=True, download=True, transform=transform_train)
-        train_loader = DataLoader(
-            trainset, batch_size=args.batch_size, shuffle=True)
-
-        testset = torchvision.datasets.CIFAR100(
-            root='./data', train=False, download=True, transform=transform_test)
-        val_loader = DataLoader(
-            testset, batch_size=args.batch_size, shuffle=False)'''
+   
 
     classes = ('plane', 'car', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck')
